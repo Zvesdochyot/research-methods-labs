@@ -1,2 +1,2 @@
-# Research Methods labs
-ІВ-92 Накарловіч Ростислав Варіант #214
+# Research Methods laboratory works
+## Група ІВ-92, Накарловіч Ростислав, Варіант #214
