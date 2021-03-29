@@ -1,6 +1,6 @@
 import random
 
-import numpy as np
+import numpy
 
 # Блок даних, заданих за варіантом 214
 x1_min, x1_max = -25, 75
@@ -18,7 +18,7 @@ def find_coefficient(a, b=None):
 
 
 def solve_cramer(arr, ins, pos):
-    return np.linalg.det(np.insert(np.delete(arr, pos, 1), pos, ins, 1)) / np.linalg.det(arr)
+    return numpy.linalg.det(numpy.insert(numpy.delete(arr, pos, 1), pos, ins, 1)) / numpy.linalg.det(arr)
 
 
 def get_dispersion(y, y_r):
@@ -94,13 +94,13 @@ def fisher(y_r, y_st, b_det, dispersion, m):
 
 
 def simulate_experiment(m, min_x1, max_x1, min_x2, max_x2, min_x3, max_x3):
-    x_appropriate = np.array([
+    x_appropriate = numpy.array([
         [min_x1, min_x2, min_x3],
         [min_x1, max_x2, max_x3],
         [max_x1, min_x2, max_x3],
         [max_x1, max_x2, min_x3]
     ])
-    x_normalized = np.array([
+    x_normalized = numpy.array([
         [1, -1, -1, -1],
         [1, -1, 1, 1],
         [1, 1, -1, 1],
@@ -140,14 +140,14 @@ def simulate_experiment(m, min_x1, max_x1, min_x2, max_x2, min_x3, max_x3):
     a23 = a32 = find_coefficient(x_T[1], x_T[2])
 
     # Вирішення системи алгебраїчних рівнянь методом Крамера
-    b_delta = np.array([
+    b_delta = numpy.array([
         [1, mx[0], mx[1], mx[2]],
         [mx[0], a11, a12, a13],
         [mx[1], a21, a22, a23],
         [mx[2], a31, a32, a33]
     ])
 
-    b_set = np.array([my, a1, a2, a3])
+    b_set = numpy.array([my, a1, a2, a3])
     b = [solve_cramer(b_delta, b_set, i) for i in range(N)]
 
     b_det = student(dispersion, m, y_r, x_normalized)
@@ -169,7 +169,7 @@ def simulate_experiment(m, min_x1, max_x1, min_x2, max_x2, min_x3, max_x3):
     # Блок роздруківки результатів
     print(f'Матриця планування для m = {m}:')
     for i in range(m):
-        print(f'Y{i + 1} - {np.array(y).T[i]}')
+        print(f'Y{i + 1} - {numpy.array(y).T[i]}')
 
     print(f'Середні значення функції відгуку y_r = {y_r}')
     print(f'Коефіцієнти рівняння регресії:')
