@@ -1,4 +1,3 @@
-
 import random
 from functools import partial
 
@@ -6,7 +5,9 @@ import numpy
 import pandas
 import sklearn.linear_model as lm
 from scipy.stats import f, t
+# Використана функція ccdesign з модулю pyDOE2, яка дозволяє створювати центральний композиційний план
 from pyDOE2 import ccdesign
+# tabulate - модуль, який надає можливість красиво відображати табличні дані
 from tabulate import tabulate
 
 
