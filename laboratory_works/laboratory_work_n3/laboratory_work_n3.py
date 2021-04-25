@@ -1,15 +1,9 @@
+import time
 import random
 
 import numpy
 
-# Блок даних, заданих за варіантом 214
-x1_min, x1_max = -25, 75
-x2_min, x2_max = -20, 60
-x3_min, x3_max = -25, -10
-experiments_count = 3  # Кількість експериментів
-
-y_min = round(200 + (x1_min + x2_min + x3_min) / 3)
-y_max = round(200 + (x1_max + x2_max + x3_max) / 3)
+counter = 0
 
 
 def find_coefficient(a, b=None):
@@ -87,10 +81,15 @@ def fisher(y_r, y_st, b_det, dispersion, m):
     fap = sad / sb
     ft = table[f3][f4 - 1]
 
-    if fap < ft:
-        return f'Рівняння регресії адекватно оригіналу Fap < Ft: {round(fap, 2)} < {ft}'
+    if fap > ft:
+        print(f'Рівняння регресії не є адекватним оригіналу Fap > Ft: {round(fap, 2)} > {ft}')
+        global counter
+        counter += 1
+        if counter == 101:
+            print('Кількість повторів циклу перевищила 100, а рівняння все ще не є адекватним!')
+        raise AssertionError('Рівняння регресії не є адекватним оригіналу при рівні значимості 0.05.')
     else:
-        return f'Рівняння регресії неадекватно оригіналу Fap > Ft: {round(fap, 2)} > {ft}'
+        print(f'Рівняння регресії адекватно оригіналу Fap < Ft: {round(fap, 2)} < {ft}')
 
 
 def simulate_experiment(m, min_x1, max_x1, min_x2, max_x2, min_x3, max_x3):
@@ -163,9 +162,6 @@ def simulate_experiment(m, min_x1, max_x1, min_x2, max_x2, min_x3, max_x3):
         y_st = [round(b_cut[0] + x_appropriate[i][0] * b_cut[1] +
                       x_appropriate[i][1] * b_cut[2] + x_appropriate[i][2] * b_cut[3], 2) for i in range(N)]
 
-    # Оцінка адекватності моделі за критерієм Фішера
-    fisher_criterion = fisher(y_r, y_st, b_det, dispersion, m)
-
     # Блок роздруківки результатів
     print(f'Матриця планування для m = {m}:')
     for i in range(m):
@@ -183,17 +179,38 @@ def simulate_experiment(m, min_x1, max_x1, min_x2, max_x2, min_x3, max_x3):
           f'{[f"b{i}" for i in range(len(b_det)) if not b_det[i]]} приймаємо незначними')
 
     print(f'Отримані функції відгуку зі спрощеними коефіцієнтами y_st = {y_st}')
-    print(fisher_criterion)
+
+    # Оцінка адекватності моделі за критерієм Фішера
+    fisher(y_r, y_st, b_det, dispersion, m)
 
 
 def try_start_experiment(m, min_x1, max_x1, min_x2, max_x2, min_x3, max_x3):
-    try:
-        simulate_experiment(m, min_x1, max_x1, min_x2, max_x2, min_x3, max_x3)
-    except ValueError:
-        m += 1
-        try_start_experiment(m, min_x1, max_x1, min_x2, max_x2, min_x3, max_x3)
+    start_time = time.time()
+    while counter <= 100:
+        try:
+            simulate_experiment(m, min_x1, max_x1, min_x2, max_x2, min_x3, max_x3)
+        except ValueError:
+            m += 1
+            try_start_experiment(m, min_x1, max_x1, min_x2, max_x2, min_x3, max_x3)
+        except AssertionError:
+            # Час виконання попередньої ітерації в мілісекундах (+1 для уникнення помилки ZeroDivisionError)
+            iteration_time = (time.time() - start_time) * 1000 + 1
+            min_x1 /= iteration_time
+            max_x1 /= iteration_time
+            min_x2 /= iteration_time
+            max_x2 /= iteration_time
+            min_x3 /= iteration_time
+            max_x3 /= iteration_time
+            try_start_experiment(m, min_x1, max_x1, min_x2, max_x2, min_x3, max_x3)
 
 
 # Точка входу програми
 if __name__ == '__main__':
+    # Блок даних, заданих за варіантом 214
+    x1_min, x1_max = -25, 75
+    x2_min, x2_max = -20, 60
+    x3_min, x3_max = -25, -10
+    experiments_count = 3  # Кількість експериментів
+    y_min = round(200 + (x1_min + x2_min + x3_min) / 3)
+    y_max = round(200 + (x1_max + x2_max + x3_max) / 3)
     try_start_experiment(experiments_count, x1_min, x1_max, x2_min, x2_max, x3_min, x3_max)
