@@ -127,8 +127,8 @@ class LaboratoryWorkN5:
         print(f'Перевірка за критерієм Стьюдента:\n\t{ts}')
         result = [element for element in ts if element > t_student]
         final_k = [self.b[i] for i in range(len(ts)) if ts[i] in result]
-        print(f'\tКоефіцієнти {[round(i, 3) for i in self.b if i not in final_k]} '
-              f'статистично незначущі, тому ми виключаємо їх з рівняння.')
+        insignificant_coefficients = [round(i, 3) for i in self.b if i not in final_k]
+        print(f'\tКоефіцієнти {insignificant_coefficients} статистично незначущі, тому ми виключаємо їх з рівняння.')
 
         y_new = []
         for j in range(self.n):
@@ -151,7 +151,10 @@ class LaboratoryWorkN5:
         print('Перевірка адекватності за критерієм Фішера:')
         print(f'\tFp = {f_p}')
         print(f'\tFt = {f_t}')
-        if f_p < f_t:
+
+        if f_p < f_t and len(self.b) - len(insignificant_coefficients) <= len(insignificant_coefficients):
+            print(f'\tКількість значимих коефіцієнтів = {len(self.b) - len(insignificant_coefficients)}')
+            print(f'\tКількість не значимих коефіцієнтів = {len(insignificant_coefficients)}')
             print('\tМатематична модель адекватна експериментальним даним.')
         else:
             print('\tМатематична модель не адекватна експериментальним даним.')
