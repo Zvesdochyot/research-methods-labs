@@ -88,28 +88,19 @@ class LaboratoryWorkN4:
 
     def bs(self, x, y_average):
         res = [sum(1 * y for y in y_average) / self.n]
-        for i in range(7):
+        for i in range(len(x[0])):
             b = sum(j[0] * j[1] for j in zip(x[:, i], y_average)) / self.n
             res.append(b)
         return res
 
-    def student_criterion(self, x, y_average, dispersion):
-        dispersion_average = sum(dispersion) / self.n
+    # Для перевірки за критерієм Стьюдента не потрібно було створювати дві функції, адже вони мали схожий принцип
+    # роботи і відрізнялися лише вхідним параметром x (матриці мали різний розмір)
+    def student_criterion(self, x, y, y_average):
+        s_kv = self.get_dispersion(y, y_average)
+        dispersion_average = sum(s_kv) / self.n
         s_beta_s = (dispersion_average / self.n / self.m) ** 0.5
-
-        beta = [sum(1 * y for y in y_average) / self.n]
-        for i in range(3):
-            b = sum(j[0] * j[1] for j in zip(x[:, i], y_average)) / self.n
-            beta.append(b)
-
-        return [round(abs(b) / s_beta_s, 3) for b in beta]
-
-    def student_criterion_alt(self, x, y, y_average):
-        S_kv = self.get_dispersion(y, y_average)
-        s_kv_average = sum(S_kv) / self.n
-        s_bs = (s_kv_average / self.n / self.m) ** 0.5
         bs_value = self.bs(x, y_average)
-        return [round(abs(b) / s_bs, 3) for b in bs_value]
+        return [round(abs(b) / s_beta_s, 3) for b in bs_value]
 
     def fisher_criterion(self, y, y_average, y_new, d, dispersion):
         S_ad = self.m / (self.n - d) * sum([(y_new[i] - y_average[i]) ** 2 for i in range(len(y))])
@@ -129,7 +120,7 @@ class LaboratoryWorkN4:
         qq = (1 + 0.95) / 2
         student_cr_table = t.ppf(df=f3, q=qq)
 
-        ts = self.student_criterion_alt(x_matrix[:, 1:], y_matrix, y_average)
+        ts = self.student_criterion(x_matrix[:, 1:], y_matrix, y_average)
 
         temp_cochrane = f.ppf(q=(1 - q / f1), dfn=f2, dfd=(f1 - 1) * f2)
         cochrane_cr_table = temp_cochrane / (temp_cochrane + f1 - 1)
@@ -263,7 +254,7 @@ class LaboratoryWorkN4:
 
         qq = (1 + 0.95) / 2
         student_cr_table = t.ppf(df=f3, q=qq)
-        student_value = self.student_criterion(x_normalized[:, 1:], y_average, dispersion_list)
+        student_value = self.student_criterion(x_normalized[:, 1:], y, y_average)
 
         print('Критерій Стьюдента:')
         print('\tТабличне значення критерій Стьюдента:', student_cr_table)
