@@ -1,4 +1,5 @@
 import math
+import time
 import random
 
 import numpy
@@ -112,12 +113,6 @@ class LaboratoryWorkN6:
         for i in range(15):
             print('\t{:.3f}'.format(average_y[i]), end=' ')
 
-        dispersions = []
-        for i in range(len(y)):
-            a = 0
-            for k in y[i]:
-                a += (k - numpy.mean(y[i], axis=0)) ** 2
-            dispersions.append(a / len(y[i]))
         my = sum(average_y) / 15
         mx = []
         for i in range(10):
@@ -159,11 +154,24 @@ class LaboratoryWorkN6:
                      list_a[k][9]
         for i in range(15):
             print('\t{:.3f}'.format(y_i[i]), end=' ')
+
+        # Якщо сама однорідніть обраховується більше ніж 0.1 дисперсія вважається неоднорідною
+        # (Я інтерпретував це завдання так, що час обрахунку однорідності не повинен перевищувати 0.1 секунди,
+        # якщо це не так, будь ласка, поясніть суть завдання більш детально)
+        start_time = time.perf_counter()
         print('\nПеревірка за критерієм Кохрена:')
+        dispersions = []
+        for i in range(len(y)):
+            a = 0
+            for k in y[i]:
+                a += (k - numpy.mean(y[i], axis=0)) ** 2
+            dispersions.append(a / len(y[i]))
         gp = max(dispersions) / sum(dispersions)
         gt = 0.3346
         print(f'\tGp = {gp}')
-        if gp < gt:
+        execution_time = time.perf_counter() - start_time
+        print(f'Час виконання ділянки коду (в секундах): {execution_time}')
+        if gp < gt and execution_time <= 0.1:
             print('\tДисперсія однорідна.')
         else:
             print('\tДисперсія неоднорідна.')
