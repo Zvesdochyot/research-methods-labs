@@ -87,6 +87,7 @@ namespace LaboratoryWorkN1a
                     return;
                 }
 
+                int counter = 0;
                 while (true)
                 {
                     long tempValue = a * a - element;
@@ -96,6 +97,12 @@ namespace LaboratoryWorkN1a
                         break;
                     }
                     a++;
+                    counter++;
+                    if (counter == 100)
+                    {
+                        await DisplayAlert("Error", "The program could not find an answer in 100 iterations, please try again.", "Try again");
+                        return;
+                    }
                 }
                 await DisplayAlert("Result", $"Number 1 = {a - b}\nNumber 2 = {a + b}", "Got it!");
             }
