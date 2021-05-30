@@ -1,6 +1,6 @@
 import math
 
-delta_max = 0.0265919
+delta_max = 0.01491361
 h = 10 ** (-14)
 
 
@@ -8,8 +8,8 @@ def d2f(x):
     return -20 * (x ** 3)
 
 
-x4 = -1
-while x4 <= 10 ** (-14):
+x5 = -1
+while x5 <= (10 ** (-14)):
     delta_max += h
     x0 = -1
     a1 = abs(d2f(x0))
@@ -25,9 +25,13 @@ while x4 <= 10 ** (-14):
 
     x3 = x2 + h3
     a4 = abs(d2f(x3))
-    h4 = math.sqrt((8 * delta_max) / a4)
+    h4 = math.sqrt((16 * delta_max) / a4)
 
     x4 = x3 + h4
-    print(x4)
+    a5 = abs(d2f(x4))
+    h5 = math.sqrt((8 * delta_max) / a5)
 
-print(delta_max)
+    x5 = x4 + h5
+    print(x5)
+
+print(f'Delta = {delta_max}')
